@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "982993054371",
+    "project_id": "sweetncolours-5cfc2",
+    "storage_bucket": "sweetncolours-5cfc2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:982993054371:android:3f88a89e24e5e90cbaad16",
+        "android_client_info": {
+          "package_name": "com.example.sweetncolour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "982993054371-8f18b37l9uh70a4f69paa5jad0c6lf4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdhazHCszpKdgVqy1Q52w5DW_Smz8UZl8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "982993054371-8f18b37l9uh70a4f69paa5jad0c6lf4g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "982993054371-gdl3bgcrgp309r08m479hrj2b44scdju.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sweetncolour"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:982993054371:android:503fea8f253e91c0baad16",
+        "android_client_info": {
+          "package_name": "com.example.sweetncolours"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "982993054371-8f18b37l9uh70a4f69paa5jad0c6lf4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdhazHCszpKdgVqy1Q52w5DW_Smz8UZl8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "982993054371-8f18b37l9uh70a4f69paa5jad0c6lf4g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "982993054371-gdl3bgcrgp309r08m479hrj2b44scdju.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sweetncolour"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
