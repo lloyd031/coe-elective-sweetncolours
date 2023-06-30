@@ -14,11 +14,12 @@ import 'package:sweetncolours/prod.dart';
 import 'package:sweetncolours/proddetails.dart';
 import 'package:sweetncolours/services/database.dart';
 import 'package:sweetncolours/shared/loading.dart';
+// ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
   bool isloggedin;
   bool showSignIn=false;
   bool showSignUp=false;
-  MyHomePage(this.isloggedin);
+  MyHomePage(this.isloggedin, {super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -27,12 +28,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   
   
+  // ignore: non_constant_identifier_names
   String? cat_title="All";
   String? selectedCAtegory="All";
+  // ignore: non_constant_identifier_names
   String? prod_name;
+  // ignore: non_constant_identifier_names
   String? prod_image;
+  // ignore: non_constant_identifier_names
   String? prod_price;
+  // ignore: non_constant_identifier_names
   String? prod_description;
+  // ignore: non_constant_identifier_names
   String? prod_details;
   
   void getProductDetails(String img, String name, String price,String description,String details)
@@ -50,10 +57,10 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showOrders=false;
   void setCatTitle(String? cat)
   {
-    print(cat);
+    
     setState(() {
-      this.cat_title=cat;
-      this.selectedCAtegory=cat;
+      cat_title=cat;
+      selectedCAtegory=cat;
     });
   }
   void showSignInPanel()
@@ -98,10 +105,10 @@ class _MyHomePageState extends State<MyHomePage> {
         return StreamProvider<List<OrderModel>?>.value(
                           value:DatabaseService(user?.uid,user?.email,null).getOrders,
                           initialData: null,
-                          child:Orders());
+                          child:const Orders());
       }
       else{
-        return Loading();
+        return const Loading();
       }
        
     });
@@ -145,21 +152,21 @@ class _MyHomePageState extends State<MyHomePage> {
       elevation: 0,
       backgroundColor:Colors.white,
       actions: <Widget>[
-        IconButton(onPressed: (){}, icon: Icon(Icons.shopping_bag, color:Color.fromRGBO(215,15,100, 1),size: 18,)),
+        IconButton(onPressed: (){}, icon: const Icon(Icons.shopping_bag, color:Color.fromRGBO(215,15,100, 1),size: 18,)),
       ],
       ),
-      body:widget.showSignIn? SignIn(): widget.showSignUp? Register():SingleChildScrollView(
+      body:widget.showSignIn? const SignIn(): widget.showSignUp? const Register():SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
-          SizedBox(height: 10,),
-          SizedBox(height: 15,),
+          const SizedBox(height: 10,),
+          const SizedBox(height: 15,),
               StreamProvider<List<CategoryModel>?>.value(
                   value:DatabaseService(user?.uid, user?.email,null).getCategory,
                   initialData: null,
                   child:Category(setCatTitle,selectedCAtegory)),
-          SizedBox(height:3,),
+          const SizedBox(height:3,),
           Padding(
-                padding: EdgeInsets.fromLTRB(20,0,20,20),
+                padding: const EdgeInsets.fromLTRB(20,0,20,20),
                 child: StreamProvider<List<Products>?>.value(
                   value:DatabaseService(user?.uid,user?.email,cat_title).getProducts,
                   initialData: null,

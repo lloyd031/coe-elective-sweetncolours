@@ -132,7 +132,7 @@ Future addProductToCartCollection(String name, String price,String image,String 
       return Products(doc.get('name'),doc.get('price'),doc.get('description'),"",doc.get('image'),doc.get('quantity'),doc.get('total'),doc.id);
     }).toList();
   }
-  List<OrderModel> _orderListFromCategorySnapShot(QuerySnapshot snapshot)
+  List<OrderModel> _orderListFromCartSnapShot(QuerySnapshot snapshot)
   {
     return snapshot.docs.map((doc){
       
@@ -145,8 +145,9 @@ Future addProductToCartCollection(String name, String price,String image,String 
     return prodToCart.doc(uid).collection("cart").snapshots().map(_productListFromCategorySnapShot);
   }
   //get order stream
+  
   Stream<List<OrderModel>> get getOrders{
-    return order.doc(uid).collection("order").snapshots().map(_orderListFromCategorySnapShot);
+    return order.doc(uid).collection("order").snapshots().map(_orderListFromCartSnapShot);
   }
   
 
