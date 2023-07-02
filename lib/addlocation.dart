@@ -110,8 +110,9 @@ class _AddLocationState extends State<AddLocation> {
     ]
   ];
   final Completer<GoogleMapController> controller=Completer();
-  static const CameraPosition initialPosition= CameraPosition(target: LatLng(37.15478,-122.78945),zoom:14.0);
-  static const CameraPosition targetPosition= CameraPosition(target: LatLng(33.15478,-135.78945),zoom:14.0,bearing: 192, tilt:60);
+  List<Marker>? locmarker;
+  CameraPosition initialPosition= CameraPosition(target: LatLng(12.8797,121.7740),zoom:6.0);
+  CameraPosition targetPosition= CameraPosition(target: LatLng(12.8797,121.7740),zoom:6.0,bearing: 192, tilt:60);
   bool getloc=false;
   Position? currentPosition;
   String? currentAddress;
@@ -155,6 +156,9 @@ Future<void> spotloc() async
 {
   final GoogleMapController controller =await this.controller.future;
   controller.animateCamera(CameraUpdate.newCameraPosition(targetPosition));
+  setState(() {
+                  initialPosition= targetPosition;
+                });
 }
 void getAddress(latitude,longitude)async
 {
@@ -172,13 +176,18 @@ void getAddress(latitude,longitude)async
 }
 void locationStream(latitude, longitude)
 {
-  final LocationSettings locationSettings = LocationSettings(
+  final LocationSettings locationSettings = const LocationSettings(
   accuracy: LocationAccuracy.high,
   distanceFilter: 100,
 );
  Geolocator.getPositionStream(locationSettings: locationSettings).listen(
     (Position? position) {
         getAddress(position!.latitude,position.longitude);
+        setState(() {
+                  targetPosition= CameraPosition(target: LatLng(latitude, longitude),zoom:16.0,bearing: 192, tilt:60);
+                  
+                });
+                spotloc();
     });
 }
 String dateFormat="";
@@ -207,7 +216,7 @@ String dateFormat="";
           Text("Please provide your location", style:TextStyle(fontSize: 16,color:Colors.grey[800])),
           
           ]),
-            
+            SizedBox(height:8),
             InkWell(
               onDoubleTap: ()async{
               setState(() {
@@ -218,12 +227,18 @@ String dateFormat="";
                 currentPosition = await _determinePosition();
                  getAddress(currentPosition!.latitude, currentPosition!.longitude);
                 locationStream(currentPosition!.latitude, currentPosition!.longitude);
+                setState(() {
+                  targetPosition= CameraPosition(target: LatLng(currentPosition!.latitude, currentPosition!.longitude),zoom:16.0,bearing: 192, tilt:60);
+                  locmarker=<Marker>[Marker(markerId: MarkerId('12'), position: LatLng(currentPosition!.latitude, currentPosition!.longitude))];
+                });
+                spotloc();
               }
             },
               child:(getloc==true)?Container(
                 
-                height: 100,
-                child:  GoogleMap(initialCameraPosition: initialPosition, mapType: MapType.normal,onMapCreated: (GoogleMapController controller){
+                height: 200,
+                child:  GoogleMap(
+                  initialCameraPosition: initialPosition, mapType: MapType.normal,onMapCreated: (GoogleMapController controller){
                     this.controller.complete(controller);
                   },),
                 
