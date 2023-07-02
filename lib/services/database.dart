@@ -48,6 +48,7 @@ Future reflectOrder(String datetime) async{
     return await orders.doc().set({
       'customer_id':uid,
       'order_id':uid!+datetime,
+      'status':"pending",
     });
   }
   
