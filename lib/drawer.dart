@@ -9,9 +9,8 @@ import 'package:sweetncolours/shared/loading.dart';
 final AuthService _auth=AuthService();
 // ignore: must_be_immutable
 class MyDrawer extends StatelessWidget {
-Function showCartPanel;
-Function showOrderPanel;
-  MyDrawer(this.showCartPanel,this.showOrderPanel, {super.key});
+Function showWidgets;
+  MyDrawer(this.showWidgets, {super.key});
   
   @override
   Widget build(BuildContext context) {
@@ -57,13 +56,13 @@ Function showOrderPanel;
               ListTile(
                 leading:const Icon(Icons.shopping_cart),
                 title:const Text('My Cart'),
-                onTap: (){showCartPanel();},
+                onTap: (){showWidgets(0);},
               ),
               ListTile(
                 leading:const Icon(Icons.shopping_bag),
                 title:const Text('My Oders'),
                 onTap: (){
-                  showOrderPanel();
+                  showWidgets(1);
                 },
               ),
               const Divider(),
@@ -99,6 +98,7 @@ Function showOrderPanel;
                 leading:const Icon(Icons.exit_to_app),
                 title:const Text('Signout'),
                 onTap: ()async{
+                  showWidgets(4);
                  await _auth.signOut();
                 },
               ),

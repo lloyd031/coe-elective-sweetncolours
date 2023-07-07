@@ -9,11 +9,14 @@ import 'package:sweetncolours/drawer%20guest.dart';
 import 'package:sweetncolours/drawer.dart';
 import 'package:sweetncolours/models/product.dart';
 import 'package:sweetncolours/models/user.dart';
-import 'package:sweetncolours/orders.dart';
+import 'package:sweetncolours/orderdetails.dart';
 import 'package:sweetncolours/prod.dart';
 import 'package:sweetncolours/proddetails.dart';
 import 'package:sweetncolours/services/database.dart';
 import 'package:sweetncolours/shared/loading.dart';
+
+import '../orders.dart';
+import '../slider.dart';
 // ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
   bool isloggedin;
@@ -52,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
       prod_details=details;
     });
   }
-  bool showProductDetails=false;
+  
   bool showCart=false;
   bool showOrders=false;
   void setCatTitle(String? cat)
@@ -79,11 +82,19 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     
   }
-  
+  OrderModel? orderdet;
+  void getOrderDet(OrderModel orderdet)
+  {
+    setState(() {
+      this.orderdet=orderdet;
+    });
+  }
+  // cart,order,productdet,orderdet,signout
+List<bool> widgets=[false,false,false,false,false];
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserObj?>(context);
-    
+
     void showBottomSheet ()
   {
      showModalBottomSheet(context: context,
@@ -91,21 +102,15 @@ class _MyHomePageState extends State<MyHomePage> {
      isScrollControlled: true,
      builder: (context)
     {
-      if(showProductDetails==true)
+      if(widgets[2]==true)
       {
         return SafeArea(child: ProdDetails("$prod_image","$prod_name","$prod_price","$prod_description","$prod_details"));
-      }else if(showCart==true)
+      }else if(widgets[0]==true)
       {
         return StreamProvider<List<Products>?>.value(
                           value:DatabaseService(user?.uid,user?.email,null).getProductsFromCart,
                           initialData: null,
                           child:Cart());
-      }else if(showOrders==true)
-      {
-        return StreamProvider<List<OrderModel>?>.value(
-                          value:DatabaseService(user?.uid,user?.email,null).getOrders,
-                          initialData: null,
-                          child:const Orders());
       }
       else{
         return const Loading();
@@ -113,37 +118,37 @@ class _MyHomePageState extends State<MyHomePage> {
        
     });
   }
-  void showProductDetailsPanel()
-  {
-    setState(() {
-      showProductDetails=true;
-      showCart=false;
-      showOrders=false;
-      showBottomSheet ();
-    });
-  }
-  void showCartPanel()
-  {
-    setState(() {
-      showProductDetails=false;
-      showCart=true;
-      showOrders=false;
-      showBottomSheet ();
-    });
-  }
-  void showOrdersPanel()
-  {
-    setState(() {
-      showProductDetails=false;
-      showOrders=true;
-      showCart=false;
-      showBottomSheet ();
-    });
-  }
+  
+  void showWidgets(int index)
+{
+    widgets[index]=true;
+    if(index<3 && index!=1)
+    {
+      setState(() {
+        showBottomSheet();
+      });
+    }
+    for(int i=0; i<widgets.length; i++)
+    {
+        if(i!=index)
+        {
+          setState(() {
+            widgets[i]=false;
+          });
+        }
+    {
+
+    }
+    }
+    
+}
+  
+  
+  
     return Scaffold(
       //Color.fromRGBO(215,15,100, 1)
       backgroundColor: Colors.white,
-      drawer:(widget.isloggedin==false)?MyDrawerGuest(showSignIn: showSignInPanel,showSignUp: showSignUpPanel):MyDrawer(showCartPanel,showOrdersPanel),
+      drawer:(widget.isloggedin==false)?MyDrawerGuest(showSignIn: showSignInPanel,showSignUp: showSignUpPanel):MyDrawer(showWidgets),
      
       appBar:  AppBar(
         leading: Builder( builder: (BuildContext context) { return IconButton(
@@ -155,10 +160,13 @@ class _MyHomePageState extends State<MyHomePage> {
         IconButton(onPressed: (){}, icon: const Icon(Icons.shopping_bag, color:Color.fromRGBO(215,15,100, 1),size: 18,)),
       ],
       ),
-      body:widget.showSignIn? const SignIn(): widget.showSignUp? const Register():SingleChildScrollView(
+      body: widget.showSignIn? const SignIn(): widget.showSignUp? const Register():SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: Column(children: [
-          const SizedBox(height: 10,),
+        child:(widgets[3]==true)?OrderDetails(orderdet:orderdet) :(widgets[1]==true)?StreamProvider<List<Orders>?>.value(
+                  value:FetchOrderFromCustomer(null,null).getOrdersFromCustomer,
+                  initialData: null,
+                  child: OrdersPanel(showPanel: showWidgets,getOrderDet:getOrderDet)): Column(children: [
+          MySlider(),
           const SizedBox(height: 15,),
               StreamProvider<List<CategoryModel>?>.value(
                   value:DatabaseService(user?.uid, user?.email,null).getCategory,
@@ -170,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: StreamProvider<List<Products>?>.value(
                   value:DatabaseService(user?.uid,user?.email,cat_title).getProducts,
                   initialData: null,
-                  child: ProdGrid(showProductDetailsPanel,getProductDetails,false,(){}))),
+                  child: ProdGrid(showWidgets,getProductDetails,false,(){}))),
         ],),
       )
       

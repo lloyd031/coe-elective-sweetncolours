@@ -23,14 +23,16 @@ class DatabaseService
 //place order
 
 final CollectionReference order =FirebaseFirestore.instance.collection('order');
-Future placeOrder(String total,String location,String phone,String status,String uid,String datetime) async{
+Future placeOrder(String total,String location,String phone,String status,String uid,String datetime,double lat, double long) async{
    reflectOrder(datetime);
     return await order.doc(uid).collection("order").doc(uid+datetime).set({
       'time':datetime,
       'uid':uid,
       'loc':location,
       'total':total,
-      'status':status
+      'status':status,
+      'latitude':lat,
+      'longitude':long
     });
   }
   Future updateOrder(String status,String uid,String datetime) async{
@@ -152,5 +154,65 @@ Future addProductToCartCollection(String name, String price,String image,String 
   }
   
 
+}
+
+class FetchOrderFromCustomer
+{
+  final String? uid;
+  final String? orderId;
+  FetchOrderFromCustomer(this.orderId,this.uid);
+  final CollectionReference order =FirebaseFirestore.instance.collection('order');
+    OrderModel? _orderListFromCartSnapShot(DocumentSnapshot snapshot)
+  {
+    
+      return OrderModel(snapshot.get('time'),snapshot.get('total'),snapshot.get('loc'),snapshot.get('status'),snapshot.get('uid'));
+  
+  }
+      //get order stream
+  
+  Stream<OrderModel?> get getOrders{
+    return order.doc(uid).collection("order").doc(orderId).snapshots().map(_orderListFromCartSnapShot);
+  }
+  
+ 
+  List<Orders> _OrderctListFromSnapShot(QuerySnapshot snapshot)
+  {
+    return snapshot.docs.map((doc){
+      
+      return Orders(doc.get('customer_id'),doc.get('order_id'),doc.id);
+    }).toList();
+  }
+    //get pendiing orders
+    final CollectionReference orders =FirebaseFirestore.instance.collection('ordertoadmin');
+    Stream<List<Orders>> get getOrdersFromCustomer{
+        return orders.where("customer_id",isEqualTo:uid).snapshots().map(_OrderctListFromSnapShot);
+      }
+  
+ List<OrderedProducts> _pendingOrderItemtListFromSnapShot(QuerySnapshot snapshot)
+  {
+    return snapshot.docs.map((doc){
+      //this.name,this.price,this.description,this.details,this.image,this.qty
+      return OrderedProducts(doc.get("name"),doc.get("price"),doc.get("image"),doc.get("quantity"));
+    }).toList();
+  }
+    //get pendiing orders
+
+    Stream<List<OrderedProducts>> get getOrdersItem{
+        return order.doc(uid).collection("order").doc(orderId).collection("products").snapshots().map(_pendingOrderItemtListFromSnapShot);
+      }
+
+      
+
+       Future updateOrderStatus(String status) async
+  {
+    return order.doc(uid).collection("order").doc(orderId).update({'status':"$status"});
+  }
+  Future updateOrderStatusInAdmin(String status) async
+  {
+    return orders.doc(orderId).update({'status':"$status"});
+  }
+  
+  
+  
   
 }

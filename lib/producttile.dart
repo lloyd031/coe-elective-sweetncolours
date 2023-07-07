@@ -6,15 +6,15 @@ class ProductTile extends StatelessWidget {
   
   final Products? prod;
   Function getProductDetails;
-  Function showProductDetailsPanel;
-  ProductTile(this.prod,this.showProductDetailsPanel,this.getProductDetails);
+  Function showWidgets;
+  ProductTile(this.prod,this.showWidgets,this.getProductDetails);
   
   @override
   Widget build(BuildContext context) {
     bool loading=false;
     final user = Provider.of<UserObj?>(context);
     return  InkWell(
-      onTap: ()async{showProductDetailsPanel();getProductDetails(prod?.image,prod?.name,prod?.price,prod?.description,prod?.details);},
+      onTap: ()async{showWidgets(2);getProductDetails(prod?.image,prod?.name,prod?.price,prod?.description,prod?.details);},
       child: Container(
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(3.0)),
@@ -60,7 +60,7 @@ class ProductTile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        Text("₱ ${prod?.price}", style: TextStyle(color:Color.fromRGBO(215,15,100, 1)),),
+                        Text("₱ ${double.parse("${prod?.price}").toStringAsFixed(2)}", style: TextStyle(color:Color.fromRGBO(215,15,100, 1)),),
                          IconButton(onPressed: (){}, icon:Icon(Icons.star, color:Colors.yellow[900],size: 18, ),),
                          
                       ],

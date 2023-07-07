@@ -20,102 +20,17 @@ class AddLocation extends StatefulWidget {
 }
 
 class _AddLocationState extends State<AddLocation> {
-  final address = ["Buntod", "Bacong"];
-  String? completeaddress;
-  String? choosenCity = "Bacong";
-  String? choosenBarangay = "Bacong";
-  String? choosenDistrict = "Bacong";
+ 
+  
+ 
   String error="";
-  String? street;
-  int cityIndex = 0;
-  int? barangayIndex = 0;
-  final city = [
-    'Bacong',
-    'Dumaguete City',
-    'Sibulan',
-  ];
-  final barangay = [
-    [
-      'Balayagmanok',
-      'Banilad',
-      'Buntis',
-      'Buntod',
-      'Calangag',
-      'Combado',
-      'Doldol',
-      'Isugan',
-      'Liptong',
-      'Lutao',
-      'Magsuhot',
-      'Malabago',
-      'Mampas',
-      'North Poblacion',
-      'Sacsac',
-      'San Miguel',
-      'South Poblacion',
-      'Sulodpan',
-      'Timbanga',
-      'Timbao',
-      'Tubod',
-      'West Poblacion'
-    ],
-    [
-      'Bagacay',
-      'Bajumpandan',
-      'Balugo',
-      'Banilad',
-      'Bantayan',
-      'Barangay Pob. 1 ',
-      'Barangay Pob. 2 ',
-      'Barangay Pob. 3 ',
-      'Barangay Pob. 4 ',
-      'Barangay Pob. 5 ',
-      'Barangay Pob. 6 ',
-      'Barangay Pob. 7 ',
-      'Barangay Pob. 8 ',
-      'Batinguel',
-      'Buñao',
-      'Cadawinonan',
-      'Calindagan',
-      'Camanjac',
-      'Candau-ay',
-      'Cantil-e',
-      'Daro',
-      'Junob',
-      'Looc',
-      'Mangnao-Canal',
-      'Motong',
-      'Piapi',
-      'Pulantubig',
-      'Tabuc-tubig',
-      'Taclobo',
-      'Talay',
-    ],
-    [
-      'Agan-an',
-      'Ajong',
-      'Balugo',
-      'Boloc-boloc',
-      'Calabnugan',
-      'Cangmating',
-      'Enrique Villanueva',
-      'Looc',
-      'Magatas',
-      'Maningcao',
-      'Maslog',
-      'Poblacion',
-      'San Antonio',
-      'Tubigon',
-      'Tubtubon'
-    ]
-  ];
   final Completer<GoogleMapController> controller=Completer();
   List<Marker>? locmarker;
   CameraPosition initialPosition= CameraPosition(target: LatLng(12.8797,121.7740),zoom:6.0);
   CameraPosition targetPosition= CameraPosition(target: LatLng(12.8797,121.7740),zoom:6.0,bearing: 192, tilt:60);
-  bool getloc=false;
+  bool getloc=true;
   Position? currentPosition;
-  String? currentAddress;
+  String currentAddress="loading...";
   Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
@@ -184,16 +99,18 @@ void locationStream(latitude, longitude)
     (Position? position) {
         getAddress(position!.latitude,position.longitude);
         setState(() {
-                  targetPosition= CameraPosition(target: LatLng(latitude, longitude),zoom:16.0,bearing: 192, tilt:60);
-                  
+                  targetPosition= CameraPosition(target: LatLng(position.latitude, position.longitude),zoom:16.0,bearing: 192, tilt:60);
+                  currentPosition=position;
                 });
                 spotloc();
     });
 }
+
 String dateFormat="";
  bool loading=false;
   @override
   Widget build(BuildContext context) {
+    
      final user = Provider.of<UserObj?>(context);
      String phone="+63 906 6581 632";
     double total=0;
@@ -211,147 +128,37 @@ String dateFormat="";
          Center(child: Text("  Almost done", style:TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color:Colors.grey[800]))),
          const SizedBox(height: 15,),
          Row(children: [
-          const Icon(Icons.location_pin,color: Color.fromRGBO(215, 15, 100, 1) ,),
-          const SizedBox(width: 6,),
-          Text("Please provide your location", style:TextStyle(fontSize: 16,color:Colors.grey[800])),
+          Text("Double tap the map to view your loaction", style:TextStyle(fontSize: 16,color:Colors.grey[800])),
           
           ]),
             SizedBox(height:8),
             InkWell(
               onDoubleTap: ()async{
-              setState(() {
-                getloc=!getloc;
-              });
-              if(getloc==true)
-              {
-                currentPosition = await _determinePosition();
+                 currentPosition = await _determinePosition();
                  getAddress(currentPosition!.latitude, currentPosition!.longitude);
                 locationStream(currentPosition!.latitude, currentPosition!.longitude);
                 setState(() {
                   targetPosition= CameraPosition(target: LatLng(currentPosition!.latitude, currentPosition!.longitude),zoom:16.0,bearing: 192, tilt:60);
                   locmarker=<Marker>[Marker(markerId: MarkerId('12'), position: LatLng(currentPosition!.latitude, currentPosition!.longitude))];
+                  
                 });
                 spotloc();
-              }
-            },
-              child:(getloc==true)?Container(
+                
+              },
+              child:Container(
                 
                 height: 200,
                 child:  GoogleMap(
+                  markers:{
+                      
+                      Marker(markerId:MarkerId("dest"),position:LatLng((currentPosition!=null)?currentPosition!.latitude:0,(currentPosition!=null)?currentPosition!.longitude:0)),
+                      
+                    },
                   initialCameraPosition: initialPosition, mapType: MapType.normal,onMapCreated: (GoogleMapController controller){
                     this.controller.complete(controller);
                   },),
                 
-              ): Container(
-                width: double.infinity,
-                color:Colors.white,
-                height:200,
-                child:Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                      Container(
-                          padding: const EdgeInsets.all(20),
-                          height: 200,
-                          color:Colors.white,
-                          child: Column(
-                            
-                            children: [
-                              const Text("City/Municipality",style:TextStyle(fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 14,),
-                              Container(
-                                width: 80,
-                                height: 2,
-                                color:const Color.fromRGBO(215, 15, 100, 1),
-                              ),
-                              const SizedBox(height: 16,),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Column(
-                                  children: [
-                                    for(int i=0; i<city.length; i++)
-                                    Column(
-                                      children: [
-                                        InkWell(
-                                          onTap: (){
-                                            setState(() {
-                                              cityIndex=i;
-                                              address[1]=city[i];
-                                              address[0]=barangay[i][0];
-                                              barangayIndex=0;
-                                            });
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(6.0),
-                                            child: Text(city[i],style:TextStyle(fontWeight: (cityIndex==i)?FontWeight.bold:FontWeight.normal,color: (cityIndex==i)?const Color.fromRGBO(215, 15, 100, 1):Colors.grey[800])),
-                                          )),
-                                        
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          height: 200,
-                          color:Colors.white,
-                          child: Column(
-                            
-                            children: [
-                              const Row(
-                                children: [
-                                  Text("Barangay",style:TextStyle(fontWeight: FontWeight.bold)),
-                                  //Icon(FontAwesomeIcons.down)
-                                ],
-                              ),
-                              const SizedBox(height: 14,),
-                              Container(
-                                width: 80,
-                                height: 2,
-                                color:const Color.fromRGBO(215, 15, 100, 1),
-                              ),
-                              const SizedBox(height: 16,),
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.vertical,
-                                  child: Column(
-                                    children: [
-                                      for(int i=0; i<barangay[cityIndex].length; i++)
-                                      Column(
-                                        children: [
-                                          InkWell(
-                                          onTap: (){
-                                            setState(() {
-                                              barangayIndex=i;
-                                              address[0]=barangay[cityIndex][i];
-                                            });
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(6.0),
-                                            child: Text(barangay[cityIndex][i],style:TextStyle(fontWeight: (barangayIndex==i)?FontWeight.bold:FontWeight.normal,color: (barangayIndex==i)?const Color.fromRGBO(215, 15, 100, 1):Colors.grey[800])),
-                                          )),
-                                          
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ), 
-                        
-                        
-                      ],
-                    ),
-                    
-                  ],
-                )
-              ),
+              )
             ),
             
            
@@ -371,23 +178,9 @@ String dateFormat="";
             ],color:Colors.white,borderRadius: BorderRadius.all(Radius.circular(20))),
               child: Center(
                 child: Text(
-                    "${(getloc==true)?currentAddress:"${address[0]} ${address[1]}, Negros Oriental Philippines"}",style: TextStyle(color: Colors.grey[800]),),
+                    "${currentAddress}",style: TextStyle(color: Colors.grey[800]),),
               )),
-          /*Container(
-            width: double.maxFinite,
-            padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
-              decoration: const BoxDecoration(boxShadow: [
-                BoxShadow(
-                    offset: Offset(3, 3),
-                    spreadRadius: -3,
-                    blurRadius: 5,
-                    color: Color.fromRGBO(0, 0, 0, 0.36),
-                ),
-            ],color:Colors.white,borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: Center(
-                child: Text(
-                    "${address[0].toString()}, ${address[1].toString()}, Negros Oriental",style: TextStyle(color: Colors.grey[800]),),
-              )),*/
+         
           const SizedBox(
             height: 10,
           ),
@@ -431,7 +224,7 @@ String dateFormat="";
                             DateTime datetime=DateTime.now();
                             dateFormat=DateFormat.yMMMMd().add_jms().format(datetime);
                           });
-                          dynamic res= await DatabaseService(user?.uid,user?.email,"",).placeOrder("$total","${address[0].toString()}, ${address[1].toString()}, Negros Oriental" , phone, "invalid", "${user?.uid}","$dateFormat");
+                          dynamic res= await DatabaseService(user?.uid,user?.email,"",).placeOrder("$total","${currentAddress}" , phone, "invalid", "${user?.uid}","$dateFormat",currentPosition!.latitude, currentPosition!.longitude);
                           if(res==null)
                           {
                             

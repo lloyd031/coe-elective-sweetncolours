@@ -27,9 +27,10 @@ class MySlider extends StatelessWidget {
            ),
          )).toList(), 
          options: CarouselOptions(
+          enableInfiniteScroll: true,
           enlargeCenterPage: true,
           autoPlay: true,
-          aspectRatio:2.0,
+          aspectRatio:3.0,
          ),
          ),
          
