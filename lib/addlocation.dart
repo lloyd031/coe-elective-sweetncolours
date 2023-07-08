@@ -30,7 +30,7 @@ class _AddLocationState extends State<AddLocation> {
   CameraPosition targetPosition= CameraPosition(target: LatLng(12.8797,121.7740),zoom:6.0,bearing: 192, tilt:60);
   bool getloc=true;
   Position? currentPosition;
-  String currentAddress="loading...";
+  String? currentAddress;
   Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
@@ -178,7 +178,7 @@ String dateFormat="";
             ],color:Colors.white,borderRadius: BorderRadius.all(Radius.circular(20))),
               child: Center(
                 child: Text(
-                    "${currentAddress}",style: TextStyle(color: Colors.grey[800]),),
+                    (currentAddress!=null)?"${currentAddress}":"",style: TextStyle(color: Colors.grey[800]),),
               )),
          
           const SizedBox(
@@ -219,6 +219,9 @@ String dateFormat="";
           SizedBox(
                           width: double.maxFinite,
                           child: ElevatedButton(onPressed: ()async{
+                            if(currentAddress!=null)
+                            {
+                              
                           setState(() {
                             loading=true;
                             DateTime datetime=DateTime.now();
@@ -260,6 +263,8 @@ String dateFormat="";
                             });
                           
                           }
+                          
+                            }
                           }, 
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(const Color.fromRGBO(215,15,100, 1),),

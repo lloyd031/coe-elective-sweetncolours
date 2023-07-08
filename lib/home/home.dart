@@ -9,12 +9,13 @@ import 'package:sweetncolours/drawer%20guest.dart';
 import 'package:sweetncolours/drawer.dart';
 import 'package:sweetncolours/models/product.dart';
 import 'package:sweetncolours/models/user.dart';
-import 'package:sweetncolours/orderdetails.dart';
 import 'package:sweetncolours/prod.dart';
 import 'package:sweetncolours/proddetails.dart';
 import 'package:sweetncolours/services/database.dart';
 import 'package:sweetncolours/shared/loading.dart';
 
+import '../loc.dart';
+import '../orderdetails.dart';
 import '../orders.dart';
 import '../slider.dart';
 // ignore: must_be_immutable
@@ -89,8 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
       this.orderdet=orderdet;
     });
   }
-  // cart,order,productdet,orderdet,signout
-List<bool> widgets=[false,false,false,false,false];
+  // cart,order,productdet,orderdet,signout,rider location 
+List<bool> widgets=[false,false,false,false,false,false];
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserObj?>(context);
@@ -160,9 +161,12 @@ List<bool> widgets=[false,false,false,false,false];
         IconButton(onPressed: (){}, icon: const Icon(Icons.shopping_bag, color:Color.fromRGBO(215,15,100, 1),size: 18,)),
       ],
       ),
-      body: widget.showSignIn? const SignIn(): widget.showSignUp? const Register():SingleChildScrollView(
+      body:(widgets[5]==true)?StreamProvider<Rider?>.value(
+                      value:DatabaseService(user?.uid, user?.email,"").riderData,
+                      initialData: null,
+                      child:const RiderLocationMap()):(widgets[3]==true)?OrderDetails(orderdet:orderdet,showWidgets:showWidgets) : widget.showSignIn? const SignIn(): widget.showSignUp? const Register():SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child:(widgets[3]==true)?OrderDetails(orderdet:orderdet) :(widgets[1]==true)?StreamProvider<List<Orders>?>.value(
+        child:(widgets[1]==true)?StreamProvider<List<Orders>?>.value(
                   value:FetchOrderFromCustomer(null,null).getOrdersFromCustomer,
                   initialData: null,
                   child: OrdersPanel(showPanel: showWidgets,getOrderDet:getOrderDet)): Column(children: [

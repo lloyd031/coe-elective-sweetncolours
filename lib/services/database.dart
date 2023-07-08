@@ -104,6 +104,16 @@ Future addProductToCartCollection(String name, String price,String image,String 
     
     return UserData(uid, snapshot.get("fn"), snapshot.get("ln"), snapshot.get("profile"),email,snapshot.get("accType"));
   }
+  Stream<Rider?> get riderData
+  {
+      return accountDetails.doc(uid).snapshots().map(_riderDataFromSnapshot);  
+  }
+  //
+  Rider? _riderDataFromSnapshot(DocumentSnapshot snapshot)
+  {
+    
+    return Rider(uid, snapshot.get("fn"), snapshot.get("ln"), snapshot.get("profile"),email,snapshot.get("accType"),snapshot.get("lat"),snapshot.get("long"));
+  }
   List<CategoryModel> _categoryListFromSnapShot(QuerySnapshot snapshot)
   {
     return snapshot.docs.map((doc){

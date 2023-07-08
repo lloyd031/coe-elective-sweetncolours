@@ -7,8 +7,9 @@ import 'models/product.dart';
 import 'models/user.dart';
 
 class OrderDetails extends StatefulWidget {
+  final Function showWidgets;
   final OrderModel? orderdet;
-  const OrderDetails({super.key, required this.orderdet});
+  const OrderDetails({super.key, required this.orderdet, required this.showWidgets});
 
   @override
   State<OrderDetails> createState() => _OrderDetailsState();
@@ -19,75 +20,151 @@ class _OrderDetailsState extends State<OrderDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return  SingleChildScrollView(
-            child: Column(
-              children: [
-                StreamProvider<List<OrderedProducts>?>.value(
-                              value:FetchOrderFromCustomer("${widget.orderdet?.id}${widget.orderdet?.time}",widget.orderdet?.id,).getOrdersItem,
-                              initialData: null,
-                              child: const OrderedItemProductTiles()),
-
-                Container(
-                  height: 10,
-                  color: Colors.grey[200],
-                ),
-                 Padding(
-                  padding: EdgeInsets.only(left:20, top: 20,),
-                  child: Row(
-                    children: [
-                       Icon(FontAwesomeIcons.truckFast,color:Colors.grey[800],size: 16,),
-                                        SizedBox(width: 10,),
-                      SizedBox(width: 10,),
-                      Text("Delivery Details",style:const TextStyle(color:Color.fromRGBO(30,30,50,1),fontSize: 16,fontWeight:FontWeight.bold)),
-                    ],
-                  ),
-                    
-                 
-                ),
-                 SizedBox(height: 10,),
-                 Padding(
-                   padding: const EdgeInsets.only(bottom:20),
-                   child: StreamProvider<UserData?>.value(
-                                value:DatabaseService(widget.orderdet?.id, null,"").userData,
-                                initialData: null,
-                                child:CustomerProfile(orderdet: widget.orderdet,)),
-                 ),
-                Container(
-                  height: 10,
-                  color: Colors.grey[200],
-                ),
-                  Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Row(
+    return  Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                           Icon(FontAwesomeIcons.moneyBill1Wave,color:Colors.grey[800],size: 16,),
-                                            SizedBox(width: 10,),
-                          SizedBox(width: 10,),
-                          Text("Cash on Delivery",style:const TextStyle(color:Color.fromRGBO(30,30,50,1),fontSize: 16,fontWeight:FontWeight.bold)),
-                        ],
+                      StreamProvider<List<OrderedProducts>?>.value(
+                                    value:FetchOrderFromCustomer("${widget.orderdet?.id}${widget.orderdet?.time}",widget.orderdet?.id,).getOrdersItem,
+                                    initialData: null,
+                                    child: const OrderedItemProductTiles()),
+        
+                      Container(
+                        height: 10,
+                        color: Colors.grey[200],
                       ),
-                      Text((widget.orderdet!=null)?"₱ ${double.parse("${widget.orderdet?.total}").toStringAsFixed(2)}":"",style: const TextStyle(fontWeight: FontWeight.bold)),
+                       Padding(
+                        padding: EdgeInsets.only(left:20, top: 20,),
+                        child: Row(
+                          children: [
+                             Icon(FontAwesomeIcons.truckFast,color:Colors.grey[800],size: 16,),
+                                              SizedBox(width: 10,),
+                            SizedBox(width: 10,),
+                            Text("Delivery Details",style:const TextStyle(color:Color.fromRGBO(30,30,50,1),fontSize: 16,fontWeight:FontWeight.bold)),
+                          ],
+                        ),
+                          
+                       
+                      ),
+                       SizedBox(height: 10,),
+                       Padding(
+                         padding: const EdgeInsets.only(bottom:20),
+                         child: StreamProvider<UserData?>.value(
+                                      value:DatabaseService(widget.orderdet?.id, null,"").userData,
+                                      initialData: null,
+                                      child:CustomerProfile(orderdet: widget.orderdet,)),
+                       ),
+                      Container(
+                        height: 10,
+                        color: Colors.grey[200],
+                      ),
+                        Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                 Icon(FontAwesomeIcons.moneyBill1Wave,color:Colors.grey[800],size: 16,),
+                                                  SizedBox(width: 10,),
+                                SizedBox(width: 10,),
+                                Text("Cash on Delivery",style:const TextStyle(color:Color.fromRGBO(30,30,50,1),fontSize: 16,fontWeight:FontWeight.bold)),
+                              ],
+                            ),
+                            Text((widget.orderdet!=null)?"₱ ${double.parse("${widget.orderdet?.total}").toStringAsFixed(2)}":"",style: const TextStyle(fontWeight: FontWeight.bold)),
+                            
+                          ],
+                        ),
+                        
+                      ),
+                      Container(
+                        height: 10,
+                        color: Colors.grey[200],
+                      ),
+        
+                       StreamProvider<OrderModel?>.value(
+                                    value:FetchOrderFromCustomer("${widget.orderdet?.id}${widget.orderdet?.time}",widget.orderdet?.id,).getOrders,
+                                    initialData: null,
+                                    child: const StatusPanel()),
+        
+                      
                       
                     ],
                   ),
-                  
-                ),
-                Container(
-                  height: 10,
-                  color: Colors.grey[200],
-                ),
-
-                OrderInstruction(index: "1",instruction: "Waiting for sellers approval",status:"pending" ,orderderstatus: "${widget.orderdet?.status}"),
-                            OrderInstruction(index: "2",instruction: "Your order is being approved",status:"approved" ,orderderstatus: "${widget.orderdet?.status}",),
-                            OrderInstruction(index: "3",instruction: "Ready for delivery",status:"To Deliver"  ,orderderstatus:"${widget.orderdet?.status}"),
-                            OrderInstruction(index: "4",instruction: "Delivering",status: "Delivering",orderderstatus: "${widget.orderdet?.status}"),
-              ],
             ),
-      );
+        ),
+            StreamProvider<OrderModel?>.value(
+                                    value:FetchOrderFromCustomer("${widget.orderdet?.id}${widget.orderdet?.time}",widget.orderdet?.id,).getOrders,
+                                    initialData: null,
+                                    child:  ViewLocBtn(showWidgets:widget.showWidgets)),        
+      ],
+    );
     
+  }
+}
+class ViewLocBtn extends StatefulWidget {
+  final Function showWidgets;
+  const ViewLocBtn({super.key,required this.showWidgets});
+
+  @override
+  State<ViewLocBtn> createState() => _ViewLocBtnState();
+}
+
+class _ViewLocBtnState extends State<ViewLocBtn> {
+  @override
+  Widget build(BuildContext context) {
+    final orderdet=Provider.of<OrderModel?>(context);
+    return  InkWell(
+                                     child: Container(
+                                              decoration:  BoxDecoration(
+                                                gradient:LinearGradient(
+                                                  begin: Alignment.bottomLeft,
+                                                  end:Alignment.topRight,
+                                                  colors:(orderdet!=null && orderdet.status!="Delivering")?[Colors.grey,Colors.grey]:[Color.fromRGBO(19,188,240,1),
+                                                    Color.fromRGBO(116,211,241,1),],
+                                                ),
+                                              
+                                              ),
+                                              padding: EdgeInsets.all(16),
+                                              
+                                              child: Center(
+                                                child: Text("VIEW RIDER LOCATION", style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold,letterSpacing: 1.5,),),
+                                              ),
+                                            ),
+                                            onTap: (){
+                                                  if(orderdet!=null && orderdet.status=="Delivering")
+                                                  {
+                                                        widget.showWidgets(5);
+                                                  }    
+                                            },
+                                          );
+  }
+}
+class StatusPanel extends StatefulWidget {
+  const StatusPanel({super.key});
+
+  @override
+  State<StatusPanel> createState() => _StatusPanelState();
+}
+
+class _StatusPanelState extends State<StatusPanel> {
+  
+  @override
+  Widget build(BuildContext context) {
+    final orderdet=Provider.of<OrderModel?>(context);
+    return Column(
+      children:[
+        OrderInstruction(index: "1",instruction: "Waiting for sellers approval",status:"pending" ,orderderstatus: "${orderdet?.status}"),
+                            OrderInstruction(index: "2",instruction: "Your order is being approved",status:"approved" ,orderderstatus: "${orderdet?.status}",),
+                            OrderInstruction(index: "3",instruction: "Ready for delivery",status:"To Deliver"  ,orderderstatus:"${orderdet?.status}"),
+                            OrderInstruction(index: "4",instruction: "Delivering",status: "Delivering",orderderstatus: "${orderdet?.status}"),
+      ],
+    );
   }
 }
 class OrderedItemProductTiles extends StatefulWidget {
@@ -139,7 +216,7 @@ class CustomerProfile extends StatelessWidget {
     return ListTile(
       
       title:Text((customerdet!=null)?"${customerdet.fn} ${customerdet.ln}":"..."),
-      subtitle:Text((orderdet!=null)?"\n${orderdet?.loc} \n  \n +62 906 6581 632":"...") ,
+      subtitle:Text((orderdet!=null)?"\n${orderdet?.loc} \n  \n+62 906 6581 632":"...") ,
      
     );
   }
